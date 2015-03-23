@@ -1,0 +1,11 @@
+{form_field form=$form field='gift_voucher'}
+    <div class="form-group {if $error}has-error{/if}">
+        <label class="control-label">{intl l='Gift Voucher'}</label>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" {form_field_attributes form=$form field='gift_voucher'} {if $is_gift_voucher}checked{/if}>
+                {$label}
+            </label>
+        </div>
+    </div>
+{/form_field}

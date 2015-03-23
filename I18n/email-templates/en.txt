@@ -1,0 +1,13 @@
+Cher client,
+
+Ce message vous communique le code qui devra être entré sur notre boutique pour profiter de ce bon cadeau.
+
+{loop type="coupon" name="coupon" id={$coupon_id}}Le code est: {$CODE}
+
+Ce code cadeau est utilisable pendant un an à partir de maintenant, et expirera le {format_date date=$EXPIRATION_DATE output="date"}
+
+Vous pouvez le communiquer à la personne de votre choix, qui bénéficiera alors d'un montant de {format_money number=$AMOUNT symbol={currency attr="symbol"}} d'achats dans notre boutique.
+
+{/loop}Merci encore pour votre achat !
+
+L'équipe {config key="store_name"}
