@@ -7,6 +7,7 @@
 
 namespace GiftVoucher\EventListeners;
 
+use GiftVoucher\Event\GiftVoucherEvent;
 use GiftVoucher\GiftVoucher;
 use GiftVoucher\Model\OrderProductGiftVoucher;
 use GiftVoucher\Model\OrderProductGiftVoucherQuery;
@@ -131,16 +132,20 @@ class ListenerManager implements EventSubscriberInterface
                                 $code,
                                 'thelia.coupon.type.remove_x_amount',
                                 Translator::getInstance()->trans(
-                                    "Bon cadeau pour produit %ref)",
-                                    ['%ref' => $product->getRef()],
+                                    "Bon cadeau pour produit %ref, commande %order",
+                                    [
+                                        '%ref' => $product->getRef(),
+                                        '%order' => $order->getRef()
+                                    ],
                                     GiftVoucher::DOMAIN_NAME
                                 ),
                                 ['amount' => $price],
                                 Translator::getInstance()->trans(
-                                    "Ce code promo a été généré automatiquement par le module Bon Cadeau, suite à l'achat du produit %title (référence %ref)",
+                                    "Ce code promo a été généré automatiquement par le module Bon Cadeau, suite à l'achat du produit %title (référence %ref), commande %order",
                                     [
                                         '%ref' => $product->getRef(),
-                                        '%title' => $product->getTitle()
+                                        '%title' => $product->getTitle(),
+                                        '%order' => $order->getRef()
                                     ],
                                     GiftVoucher::DOMAIN_NAME
                                 ),
@@ -169,14 +174,13 @@ class ListenerManager implements EventSubscriberInterface
                                 ->save();
 
                             // Send the mail to the customer
-                            $this->mailer->sendEmailToCustomer(
-                                GiftVoucher::GIFT_VOUCHER_MESSAGE_NAME,
-                                $order->getCustomer(),
-                                [
-                                    'order_id' => $order->getId(),
-                                    'coupon_id' => $couponEvent->getCouponModel()->getId()
-                                ]
-                            );
+                            $giftVoucherEvent = new GiftVoucherEvent();
+                            $giftVoucherEvent
+                                ->setOrder($order)
+                                ->setCouponId($couponEvent->getCouponModel()->getId())
+                                ;
+
+                            $event->getDispatcher()->dispatch(GiftVoucher::SEND_MAIL_EVENT, $giftVoucherEvent);
                         }
                     }
                 }
@@ -194,14 +198,31 @@ class ListenerManager implements EventSubscriberInterface
         }
     }
 
+    public function sendVoucherMail(GiftVoucherEvent $event)
+    {
+        // Send the mail to the customer
+        $this->mailer->sendEmailToCustomer(
+            GiftVoucher::GIFT_VOUCHER_MESSAGE_NAME,
+            $event->getOrder()->getCustomer(),
+            [
+                'order_id' => $event->getOrder()->getId(),
+                'coupon_id' => $event->getCouponId()
+            ]
+        );
+    }
+
     public static function getSubscribedEvents()
     {
         return [
             TheliaEvents::FORM_BEFORE_BUILD . ".thelia_product_creation" => ['addFieldToProductForm', 128],
             TheliaEvents::FORM_BEFORE_BUILD . ".thelia_product_modification" => ['addFieldToProductForm', 128],
+
             TheliaEvents::PRODUCT_UPDATE  => ['manageGiftVoucherStatus', 100],
             TheliaEvents::PRODUCT_CREATE  => ['manageGiftVoucherStatus', 100],
-            TheliaEvents::ORDER_UPDATE_STATUS  => ['generateVoucher', 10]
+
+            TheliaEvents::ORDER_UPDATE_STATUS  => ['generateVoucher', 10],
+
+            GiftVoucher::SEND_MAIL_EVENT => ['sendVoucherMail', 128],
         ];
     }
 }

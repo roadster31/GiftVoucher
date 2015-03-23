@@ -26,6 +26,8 @@ class GiftVoucher extends BaseModule
 
     const GIFT_VOUCHER_MESSAGE_NAME = 'gift_voucher_customer_message';
 
+    const SEND_MAIL_EVENT = 'gift_voucher.send-email';
+
     public function getHooks()
     {
         return [

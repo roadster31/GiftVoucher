@@ -15,5 +15,8 @@
         <hook id="giftvoucher.product_edit.hook" class="GiftVoucher\Hook\HookManager" scope="request">
             <tag name="hook.event_listener" event="product-edit.right-column.bottom" type="back" method="onProductEditRightColumnBottom" />
         </hook>
+        <hook id="giftvoucher.order_edit.hook" class="GiftVoucher\Hook\HookManager" scope="request">
+            <tag name="hook.event_listener" event="order-edit.cart-bottom" type="back" method="onOrderEditCartBottom" />
+        </hook>
     </hooks>
 </config>
