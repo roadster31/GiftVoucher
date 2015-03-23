@@ -18,7 +18,13 @@ class HookManager extends BaseHook
         $isGiftVoucher = (null !== ProductGiftVoucherQuery::create()->findOneByProductId($event->getArgument('product_id')));
 
         $event->add(
-            $this->render("gift-voucher-indicator.html", ['is_gift_voucher' => $isGiftVoucher])
+            $this->render(
+                "gift-voucher-indicator.html",
+                [
+                    'is_gift_voucher' => $isGiftVoucher,
+                    'form' => $event->getArgument('form')
+                ]
+            )
         );
     }
 }
