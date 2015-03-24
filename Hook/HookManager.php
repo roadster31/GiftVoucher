@@ -1,4 +1,13 @@
 <?php
+/*************************************************************************************/
+/*      Copyright (c) Franck Allimant, CQFDev                                        */
+/*      email : thelia@cqfdev.fr                                                     */
+/*      web : http://www.cqfdev.fr                                                   */
+/*                                                                                   */
+/*      For the full copyright and license information, please view the LICENSE.txt  */
+/*      file that was distributed with this source code.                             */
+/*************************************************************************************/
+
 /**
  * @author Franck Allimant <franck@cqfdev.fr>
  *
