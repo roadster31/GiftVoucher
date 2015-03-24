@@ -185,7 +185,7 @@ class ListenerManager implements EventSubscriberInterface
                     }
                 }
             }
-        } else {
+        } elseif (! $event->getOrder()->isPaid(false)) {
             // Supprimer tous les coupons
             $gifts = OrderProductGiftVoucherQuery::create()->filterByOrderId($event->getOrder()->getId())->find();
 
