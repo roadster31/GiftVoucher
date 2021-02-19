@@ -90,9 +90,15 @@ class ListenerManager implements EventSubscriberInterface
     {
         if ($event->getOrder()->isPaid(true)) {
             // Create a coupon for each of the gift voucher products in the order
-            $cartItems = $event->getOrder()->getCart()->getCartItems();
-
             $order = $event->getOrder();
+            $cartId = $order->getCartId();
+            $cart = CartQuery::create()->findPk($cartId);
+
+            if($cart == null){
+                return;
+            }
+            
+            $cartItems = $cart->getCartItems();
 
             foreach ($cartItems as $cartItem) {
                 $product = $cartItem->getProduct();
